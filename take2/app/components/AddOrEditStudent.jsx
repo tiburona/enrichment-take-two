@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-
+import store from '../store'
+import { changeAddOrEdit } from '../action-creators'
 
 export default class AddOrEditStudent extends Component {
 
@@ -56,6 +57,7 @@ export default class AddOrEditStudent extends Component {
         this.addOrEditFn(arg)
         this.state.name = ''
         this.state.email = ''
+        store.dispatch(changeAddOrEdit(''))
         event.preventDefault();
     }
 
