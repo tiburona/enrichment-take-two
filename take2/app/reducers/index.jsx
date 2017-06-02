@@ -1,25 +1,21 @@
-import { combineReducers } from 'redux'
-import { RECEIVE_CAMPUSES } from '../constants'
-import { SELECT_CAMPUS } from '../constants'
-import { CHANGE_VIEW } from '../constants'
-import { RECEIVE_STUDENTS} from '../constants'
-import { SELECT_STUDENT} from '../constants'
-import { CREATE_CAMPUS } from '../constants'
-import { DELETE_CAMPUS } from '../constants'
-import { CREATE_STUDENT } from '../constants'
-import { CHANGE_ADD_OR_EDIT } from '../constants'
-import { UPDATE_STUDENT } from '../constants'
-import store from '../store'
 import update from 'immutability-helper';
+
+import {
+  RECEIVE_CAMPUSES, SELECT_CAMPUS, CREATE_CAMPUS, DELETE_CAMPUS, UPDATE_CAMPUS,
+  RECEIVE_STUDENTS, SELECT_STUDENT, CREATE_STUDENT, UPDATE_STUDENT,
+  CHANGE_VIEW, CHANGE_ADD_OR_EDIT
+} from '../constants'
+
+import store from '../store'
+
 
 
 let initialState = {
   campuses: [],
-  selectedCampus : {},
-  view : 'campuses', 
+  selectedCampus: {},
   students: [],
-  selectedStudents: [],
   selectedStudent: {},
+  view: 'campuses',
   addOrEdit: ''
 }
 
@@ -29,18 +25,30 @@ const rootReducer = function (state = initialState, action) {
 
   switch (action.type) {
 
+
+    //campus actions
     case RECEIVE_CAMPUSES:
       newState.campuses = action.campuses;
       break;
-    
+
     case SELECT_CAMPUS:
       newState.selectedCampus = action.selectedCampus
       break
 
-    case CHANGE_VIEW:
-      newState.view = action.view
+    case CREATE_CAMPUS:
+      newState.campuses = update(state, { campuses: { $push: [action.campus] } }).campuses
       break
-    
+
+    case DELETE_CAMPUS:
+      return update(state, { campuses: { $set: action.campuses } })
+
+     case UPDATE_CAMPUS:
+      let oldCampus = store.getState().campuses.filter(campus => campus.id == action.campus.id)[0]
+      let idx = store.getState().campuses.indexOf(oldCampus)
+      return update(state,
+        { campuses: { $splice: [[idx, 1]], $push: [action.campus] } })
+
+    //student actions
     case RECEIVE_STUDENTS:
       newState.students = action.students
       break
@@ -48,27 +56,26 @@ const rootReducer = function (state = initialState, action) {
     case SELECT_STUDENT:
       newState.selectedStudent = action.selectedStudent
       break
-    
-    case CREATE_CAMPUS:
-      newState.campuses = update(state, {campuses: {$push: [action.campus]}}).campuses
-      break
 
     case CREATE_STUDENT:
-      newState.students = update(state, {students: {$push: [action.student]}}).students
+      newState.students = update(state, { students: { $push: [action.student] } }).students
       break
-    
-    case DELETE_CAMPUS:
-      return update(state, {campuses: {$set: action.campuses}})
+
+    case UPDATE_STUDENT:
+      let students = store.getState().students
+      let oldStudent = students.filter(student => student.id == action.student.id)[0]
+      let ind = students.indexOf(oldStudent)
+      return update(state,
+        { students: { $splice: [[ind, 1]], $push: [action.student] } })
+
+    //navigation actions
+    case CHANGE_VIEW:
+      newState.view = action.view
+      break
 
     case CHANGE_ADD_OR_EDIT:
       newState.addOrEdit = action.addOrEdit
       break
-    
-    case UPDATE_STUDENT:
-      let oldStudent = store.getState().students.filter(student => student.id == action.student.id)[0]
-      let ind = store.getState().campuses.indexOf(oldStudent)
-      return update(state, 
-        {students: {$splice: [[ind, 1]], $push: [action.student]}})
 
     default:
       return state;

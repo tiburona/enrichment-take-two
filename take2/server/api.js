@@ -129,8 +129,8 @@ api.put('/student', (req, res, next) => {
 api.put('/campus', (req, res, next) => {
     Campus.find(
         { where: { id: req.body.id } })
-        .then(student => {
-            Campus.update({
+        .then(campus => {
+            campus.update({
                 name: req.body.name,
                 imgSrc: req.body.imgSrc
             })

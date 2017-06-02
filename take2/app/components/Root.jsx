@@ -6,6 +6,7 @@ import Campus from './Campus'
 import Navbar from './Navbar';
 import Students from './Students'
 import AddCampus from './AddCampus'
+import EditCampus from './EditCampus'
 import AddOrEditStudent from './AddorEditStudent'
 
 import store from '../store'
@@ -13,16 +14,16 @@ import store from '../store'
 import {
     getCampuses, selectCampus, changeView, getStudents,
     createCampus, deleteStudent, deleteCampus, createStudent, selectStudent,
-    changeAddOrEdit, updateStudent
+    changeAddOrEdit, updateStudent, updateCampus
 } from '../action-creators'
 
 
 export const inititialState = {
     campuses: [],
-    view: 'campuses',
     selectedCampus: {},
     students: [],
     selectedStudent: {},
+    view: 'campuses',
     addOrEdit: ''
 }
 
@@ -34,15 +35,22 @@ export default class Root extends Component {
 
         this.state = inititialState
 
-        this.clickNavigate = this.clickNavigate.bind(this)
-        this.clickCampus = this.clickCampus.bind(this)
-        this.clickStudent = this.clickStudent.bind(this)
+        //Campus dispatchers
         this.addCampus = this.addCampus.bind(this)
+        this.editCampus = this.editCampus.bind(this)
         this.removeCampus = this.removeCampus.bind(this)
-        this.removeStudent = this.removeStudent.bind(this)
-        this.clickAddOrEdit = this.clickAddOrEdit.bind(this)
+
+        //Student dispatchers
         this.addStudent = this.addStudent.bind(this)
         this.editStudent = this.editStudent.bind(this)
+        this.removeStudent = this.removeStudent.bind(this)
+
+        //Navigation dispatchers
+        this.clickCampus = this.clickCampus.bind(this)
+        this.clickStudent = this.clickStudent.bind(this)
+        this.clickNavigate = this.clickNavigate.bind(this)
+        this.clickAddOrEdit = this.clickAddOrEdit.bind(this)
+        
 
     }
 
@@ -59,6 +67,8 @@ export default class Root extends Component {
         this.unsubscribe()
     }
 
+    //Campus dispatchers
+
     addCampus(name) {
         const creatingCampus = axios.post('/api/campus', { name: name })
             .then(res => {
@@ -66,6 +76,20 @@ export default class Root extends Component {
             })
             .then(campus => store.dispatch(createCampus(campus)))
             .then(() => store.dispatch(changeView('campuses')))
+            .catch(err => console.log(err))
+    }
+
+    editCampus(campus, view='campuses') {
+        console.log("campus is", campus)
+        const updatingStudent = axios.put('/api/campus', campus)
+            .then(res => {
+                return res.data
+            })
+            .then(campus => {
+                return store.dispatch(updateCampus(campus))
+            })
+            .then(() => { return store.dispatch(getCampuses()) })
+            .then(() => { return store.dispatch(changeView(view)) })
             .catch(err => console.log(err))
     }
 
@@ -83,6 +107,9 @@ export default class Root extends Component {
             .then(() => store.dispatch(changeView('campuses')))
             .catch(err => console.log(err))
     }
+
+
+    //Student dispatchers
 
     addStudent(student) {
         const creatingStudent = axios.post('/api/student', student)
@@ -119,6 +146,7 @@ export default class Root extends Component {
             .catch(err => console.log(err))
     }
 
+    //Navigation dispatchers
 
     clickCampus(id) {
 
@@ -141,15 +169,16 @@ export default class Root extends Component {
 
     }
 
+    clickNavigate(dest) {
+        store.dispatch(changeView(dest))
+    }
+
     clickAddOrEdit(addOrEdit) {
-        console.log("whats my action ", changeAddOrEdit(addOrEdit))
         store.dispatch(changeAddOrEdit(addOrEdit))
         this.forceUpdate()
     }
 
-    clickNavigate(dest) {
-        store.dispatch(changeView(dest))
-    }
+    
 
 
 
@@ -216,6 +245,10 @@ export default class Root extends Component {
                         <Campus selectedCampus={this.state.selectedCampus} />
                         {students}
                         {addOrEditForm}
+                        <EditCampus 
+                            selectedCampus={this.state.selectedCampus}
+                            editCampus={this.editCampus}
+                        />
                     </div>
                 break
 

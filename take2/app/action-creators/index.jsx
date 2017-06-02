@@ -1,7 +1,7 @@
 
 import { RECEIVE_CAMPUSES, SELECT_CAMPUS, CHANGE_VIEW, RECEIVE_STUDENTS,
 SELECT_STUDENT, CREATE_CAMPUS, DELETE_CAMPUS, DELETE_STUDENT, 
-CREATE_STUDENT, UPDATE_STUDENT } from '../constants'
+CREATE_STUDENT, UPDATE_STUDENT, UPDATE_CAMPUS } from '../constants'
 
 import {CHANGE_ADD_OR_EDIT } from '../constants'
 
@@ -26,6 +26,10 @@ export const receiveCampuses = campuses => {
 
 export const selectCampus = campus => {
   return {type: SELECT_CAMPUS, selectedCampus: campus}
+}
+
+export const updateCampus = campus => {
+  return {type: UPDATE_CAMPUS, campus: campus}
 }
 
 export const createCampus = campus => {
