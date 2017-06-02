@@ -8,7 +8,8 @@
 const User = require('./user')
 const Student = require('./student')
 const Campus = require('./campus')
-Student.belongsTo(Campus)
-Campus.hasMany(Student)
+
+Student.belongsTo(Campus, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
+Campus.hasMany(Student, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
 
 module.exports = {User, Student, Campus}

@@ -5,12 +5,8 @@ const models = require('../db/models');
 const Student = models.Student
 const Campus = models.Campus
 
-// If you aren't getting to this object, but rather the index.html (something with a joke) your path is wrong.
-	// I know this because we automatically send index.html for all requests that don't make sense in our backend.
-	// Ideally you would have something to handle this, so if you have time try that out!
-api.get('/hello', (req, res) => res.send({hello: 'world'}))
 
-
+//get routes
 
 api.get('/students', (req, res, next) => {
     Student.findAll({
@@ -39,7 +35,6 @@ api.get('/students/campus/:campusId', (req, res, next) => {
         }
     })
     .then(students => {
-        console.log("students ", students)
         res.json(students)})
     .catch(err => console.log(err))
 })
@@ -67,6 +62,9 @@ api.get('/campuses/:campusId', (req, res, next) => {
 	.catch(err => console.log(err))
 })
 
+
+//post routes
+
 api.post('/campus', (req, res, next) => {
     Campus.create({
         name: req.body.name
@@ -91,6 +89,8 @@ api.post('/student', (req, res, next ) => {
     .catch(err=>console.log(err))
 })
 
+//delete routes
+
 api.delete('/campus/:id', (req, res, next) => {
     Campus.destroy({
         where: {id: req.params.id}
@@ -105,6 +105,27 @@ api.delete('/student/:id', (req, res, next) => {
         where: {id: req.params.id}
     })
     .then(res.status(204).send())
+    .catch(err=>console.log(err))
+})
+
+//put routes
+
+api.put('/student', (req, res, next) => {
+    Student.update({
+        name: req.body.name,
+        email: req.body.email,
+        campusId: req.body.campusId
+    })
+    .then(campus => res.status(201).send(campus))
+    .catch(err=>console.log(err))
+})
+
+api.put('/student', (req, res, next) => {
+    Campus.update({
+        name: req.body.name,
+        imgSrc: req.body.imgSrc
+    })
+    .then(campus => res.status(201).send(campus))
     .catch(err=>console.log(err))
 })
 

@@ -1,7 +1,9 @@
 
 import { RECEIVE_CAMPUSES, SELECT_CAMPUS, CHANGE_VIEW, RECEIVE_STUDENTS,
 SELECT_STUDENT, CREATE_CAMPUS, DELETE_CAMPUS, DELETE_STUDENT, 
-CREATE_STUDENT } from '../constants'
+CREATE_STUDENT, UPDATE_STUDENT } from '../constants'
+
+import {CHANGE_ADD_OR_EDIT } from '../constants'
 
 import axios from 'axios';
 
@@ -58,14 +60,22 @@ export const createStudent = student => {
   return {type: CREATE_STUDENT, student: student}
 }
 
+export const updateStudent = student => {
+  return {type: UPDATE_STUDENT, student: student}
+}
+
 export const deleteStudent = students => {
   return {type: DELETE_STUDENT, students: students}
 }
 
-//change view
+//navigation action creators
 
 export const changeView = view => {
   return {type: CHANGE_VIEW, view: view}
+}
+
+export const changeAddOrEdit = addOrEdit => {
+  return {type: CHANGE_ADD_OR_EDIT, addOrEdit: addOrEdit }
 }
 
 

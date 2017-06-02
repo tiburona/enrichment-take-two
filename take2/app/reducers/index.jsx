@@ -7,6 +7,8 @@ import { SELECT_STUDENT} from '../constants'
 import { CREATE_CAMPUS } from '../constants'
 import { DELETE_CAMPUS } from '../constants'
 import { CREATE_STUDENT } from '../constants'
+import { CHANGE_ADD_OR_EDIT } from '../constants'
+import { UPDATE_STUDENT } from '../constants'
 import store from '../store'
 import update from 'immutability-helper';
 
@@ -17,7 +19,8 @@ let initialState = {
   view : 'campuses', 
   students: [],
   selectedStudents: [],
-  selectedStudent: {}
+  selectedStudent: {},
+  addOrEdit: ''
 }
 
 const rootReducer = function (state = initialState, action) {
@@ -52,11 +55,17 @@ const rootReducer = function (state = initialState, action) {
 
     case CREATE_STUDENT:
       newState.students = update(state, {students: {$push: [action.student]}}).students
-      "IM IN THE REDUCER"
       break
     
     case DELETE_CAMPUS:
       return update(state, {campuses: {$set: action.campuses}})
+
+    case CHANGE_ADD_OR_EDIT:
+      newState.addOrEdit = action.addOrEdit
+      break
+    
+    case UPDATE_STUDENT:
+      return update(state, {students: {$set: action.students}})
 
     default:
       return state;

@@ -4,10 +4,14 @@ const Students = (props) => {
     const students = props.filteredStudents
     const selectStudent = props.clickStudent
     const deleteStudent = props.deleteStudent
+    const editStudent = props.editStudent
+    const clickAddOrEdit = props.clickAddOrEdit
     const selectCampus = props.clickCampus
     const view = props.view
 
     return (
+
+        <div>
         <table className='table'>
             <thead>
                 <tr>
@@ -24,11 +28,16 @@ const Students = (props) => {
                         <td>
                             <a href='#' onClick={() => selectStudent(student.id)}>{student.name}</a>
                         </td>
-                         <td>
-                            <a href='#' onClick={() => selectStudent(student.id)}>{student.email}</a>
+                        <td>
+                            <span>{student.email}</span>
                         </td>
                         <td>
                             <a href='#' onClick={() => selectCampus(student.campus.id)}>{campusName}</a>
+                        </td>
+                        <td>
+                            <button className="btn btn-primary btn-xs"  onClick={() => { editStudent(student.id, view) }} >
+                                <span className="glyphicon glyphicon-pencil">Edit</span>
+                            </button>
                         </td>
                         <td>
                             <button className="btn btn-danger btn-xs" onClick={() => { deleteStudent(student.id, view) }}>
@@ -42,6 +51,8 @@ const Students = (props) => {
                 }
             </tbody>
         </table>
+            <a href='#' onClick={() => clickAddOrEdit('add')}>Click to add a student</a>
+        </div>
     )
 }
 

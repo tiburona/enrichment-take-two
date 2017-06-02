@@ -6,13 +6,14 @@ import Campus from './Campus'
 import Navbar from './Navbar';
 import Students from './Students'
 import AddCampus from './AddCampus'
-import AddStudent from './AddStudent'
+import AddOrEditStudent from './AddorEditStudent'
 
 import store from '../store'
 
 import {
     getCampuses, selectCampus, changeView, getStudents,
-    createCampus, deleteStudent, deleteCampus, createStudent, selectStudent
+    createCampus, deleteStudent, deleteCampus, createStudent, selectStudent,
+    changeAddOrEdit
 } from '../action-creators'
 
 
@@ -20,7 +21,9 @@ export const inititialState = {
     campuses: [],
     view: 'campuses',
     selectedCampus: {},
-    students: []
+    students: [],
+    selectedStudent: {},
+    addOrEdit: ''
 }
 
 
@@ -31,12 +34,15 @@ export default class Root extends Component {
 
         this.state = inititialState
 
-        this.clickCampus = this.clickCampus.bind(this)
         this.clickNavigate = this.clickNavigate.bind(this)
+        this.clickCampus = this.clickCampus.bind(this)
         this.clickStudent = this.clickStudent.bind(this)
         this.addCampus = this.addCampus.bind(this)
         this.removeCampus = this.removeCampus.bind(this)
         this.removeStudent = this.removeStudent.bind(this)
+        this.clickAddOrEdit = this.clickAddOrEdit.bind(this)
+        this.addStudent = this.addStudent.bind(this)
+        this.editStudent = this.editStudent.bind(this)
 
     }
 
@@ -78,13 +84,27 @@ export default class Root extends Component {
             .catch(err => console.log(err))
     }
 
-    addStudent(name, email, campusId = undefined, view = 'students') {
-        const creatingStudent = axios.post('/api/student', { name: name, email: email, campusId: campusId })
+    addStudent(student, view = 'students') {
+        console.log("THIS IS THE STUDENT IM POSTING", student)
+        const creatingStudent = axios.post('/api/student', student)
             .then(res => {
                 return res.data
             })
             .then(student => {
                 return store.dispatch(createStudent(student))
+            })
+            .then(() => { return store.dispatch(getStudents()) })
+            .then(() => { return store.dispatch(changeView(view)) })
+            .catch(err => console.log(err))
+    }
+
+    editStudent(student, view = 'students') {
+        const updatingStudent = axios.put('/api/student', student)
+            .then(res => {
+                return res.data
+            })
+            .then(student => {
+                return store.dispatch(updateStudent(student))
             })
             .then(() => { return store.dispatch(getStudents()) })
             .then(() => { return store.dispatch(changeView(view)) })
@@ -122,11 +142,54 @@ export default class Root extends Component {
 
     }
 
+    clickAddOrEdit(addOrEdit) {
+        console.log("whats my action ", changeAddOrEdit(addOrEdit))
+        store.dispatch(changeAddOrEdit(addOrEdit))
+        this.forceUpdate()
+    }
+
     clickNavigate(dest) {
         store.dispatch(changeView(dest))
     }
 
+
+
     render() {
+
+        let filteredStudents
+        switch (this.state.view) {
+            case 'campus':
+                filteredStudents= this.state.selectedCampus.students
+                break
+            case 'student':
+                filteredStudents=[this.state.selectedStudent]
+                break
+            default:
+                filteredStudents = this.state.students
+        }
+
+        let students = <Students
+            filteredStudents={filteredStudents}
+            clickCampus={this.clickCampus}
+            clickStudent={this.clickStudent}
+            view={this.state.view}
+            deleteStudent={this.removeStudent}
+            clickAddOrEdit={this.clickAddOrEdit} />
+
+        let addOrEditForm
+        
+        if (this.state.addOrEdit.length) {
+             addOrEditForm =
+            <AddOrEditStudent
+                campuses={this.state.campuses}
+                addOrEdit={this.state.addOrEdit}
+                addStudent={this.addStudent}
+                editStudent={this.editStudent}
+                selectedCampus = {this.state.selectedCampus} />
+
+        } else {
+            addOrEditForm = <div/>
+        }
 
         let toRender
 
@@ -136,7 +199,10 @@ export default class Root extends Component {
                 toRender =
                     <div>
                         <div className='row' >
-                            <Campuses campuses={this.state.campuses} clickCampus={this.clickCampus} deleteCampus={this.removeCampus} />
+                            <Campuses 
+                                campuses={this.state.campuses} 
+                                clickCampus={this.clickCampus} 
+                                deleteCampus={this.removeCampus} />
                         </div>
                         <div className='row' >
                             <AddCampus addCampus={this.addCampus} />
@@ -148,26 +214,17 @@ export default class Root extends Component {
                 toRender =
                     <div>
                         <Campus selectedCampus={this.state.selectedCampus} />
-                        <Students filteredStudents={this.state.selectedCampus.students} clickCampus={this.clickCampus}
-                            clickStudent={this.clickStudent} view={this.state.view} deleteStudent={this.removeStudent} />
-                        <AddStudent campuses={this.state.campuses} addStudent={this.addStudent}
-                            selectedCampus={this.state.selectedCampus} />
+                        {students}
+                        {addOrEditForm}
                     </div>
                 break
 
-            case 'students':
+            default:
                 toRender =
                     <div>
-                        <Students filteredStudents={this.state.students} view={this.state.view} deleteStudent={this.removeStudent}
-                            clickStudent={this.clickStudent} clickCampus={this.clickCampus} />
-                        <AddStudent campuses={this.state.campuses} addStudent={this.addStudent} />
+                        {students}
+                        {addOrEditForm}
                     </div>
-                break
-
-            case 'student':
-                toRender = <Students filteredStudents={[this.state.selectedStudent]} clickCampus={this.clickCampus}
-                    clickStudent={this.clickStudent} view={this.state.view} deleteStudent={this.removeStudent} />
-                break
         }
 
         return (
