@@ -65,7 +65,10 @@ const rootReducer = function (state = initialState, action) {
       break
     
     case UPDATE_STUDENT:
-      return update(state, {students: {$set: action.students}})
+      let oldStudent = store.getState().students.filter(student => student.id == action.student.id)[0]
+      let ind = store.getState().campuses.indexOf(oldStudent)
+      return update(state, 
+        {students: {$splice: [[ind, 1]], $push: [action.student]}})
 
     default:
       return state;

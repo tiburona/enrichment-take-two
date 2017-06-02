@@ -13,7 +13,7 @@ import store from '../store'
 import {
     getCampuses, selectCampus, changeView, getStudents,
     createCampus, deleteStudent, deleteCampus, createStudent, selectStudent,
-    changeAddOrEdit
+    changeAddOrEdit, updateStudent
 } from '../action-creators'
 
 
@@ -84,8 +84,7 @@ export default class Root extends Component {
             .catch(err => console.log(err))
     }
 
-    addStudent(student, view = 'students') {
-        console.log("THIS IS THE STUDENT IM POSTING", student)
+    addStudent(student) {
         const creatingStudent = axios.post('/api/student', student)
             .then(res => {
                 return res.data
@@ -94,7 +93,7 @@ export default class Root extends Component {
                 return store.dispatch(createStudent(student))
             })
             .then(() => { return store.dispatch(getStudents()) })
-            .then(() => { return store.dispatch(changeView(view)) })
+            .then(() => { store.dispatch(changeView('students'))})
             .catch(err => console.log(err))
     }
 
@@ -185,7 +184,8 @@ export default class Root extends Component {
                 addOrEdit={this.state.addOrEdit}
                 addStudent={this.addStudent}
                 editStudent={this.editStudent}
-                selectedCampus = {this.state.selectedCampus} />
+                selectedCampus = {this.state.selectedCampus}
+                selectedStudent = {this.state.selectedStudent} />
 
         } else {
             addOrEditForm = <div/>

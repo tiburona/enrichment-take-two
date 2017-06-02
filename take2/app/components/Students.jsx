@@ -35,7 +35,10 @@ const Students = (props) => {
                             <a href='#' onClick={() => selectCampus(student.campus.id)}>{campusName}</a>
                         </td>
                         <td>
-                            <button className="btn btn-primary btn-xs"  onClick={() => { editStudent(student.id, view) }} >
+                            <button className="btn btn-primary btn-xs"  
+                            onClick={() => {
+                                selectStudent(student.id) 
+                                clickAddOrEdit('edit') }} >
                                 <span className="glyphicon glyphicon-pencil">Edit</span>
                             </button>
                         </td>

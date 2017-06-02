@@ -5,20 +5,22 @@ export default class AddOrEditStudent extends Component {
 
     constructor(props) {
         super(props);
-        console.log("ADD STUDENT PROPS", this.props)
         let campusKey
 
         "id" in this.props.selectedCampus ? campusKey = this.props.selectedCampus.id : campusKey = 1
         if (this.props.addOrEdit === 'add') {
             this.state = { campusKey: campusKey, name: '', email: '' }
             this.addOrEditFn = this.props.addStudent
+            this.title = "Add a Student"
         } else {
-            this.state = { 
+            this.state = {
                 campusKey: campusKey,
                 name: this.props.selectedStudent.name,
-                email: this.props.selectedStudent.email
+                email: this.props.selectedStudent.email,
+                id: this.props.selectedStudent.id
             }
             this.addOrEditFn = this.props.editStudent
+            this.title = "Edit a Student"
         }
 
         this.handleCampusChange = this.handleCampusChange.bind(this);
@@ -41,11 +43,17 @@ export default class AddOrEditStudent extends Component {
     }
 
     handleSubmit(event) {
-        this.addOrEditFn(
-            {name: this.state.name,
-             email: this.state.email,
-             campusId: this.state.campusKey}
-             , this.props.view)
+        let arg = {
+            name: this.state.name,
+            email: this.state.email,
+            campusId: this.state.campusKey
+        }
+
+        if (this.props.addOrEdit === 'edit') {
+            arg.id = this.state.id
+        }
+            
+        this.addOrEditFn(arg)
         this.state.name = ''
         this.state.email = ''
         event.preventDefault();
@@ -55,7 +63,7 @@ export default class AddOrEditStudent extends Component {
         const campuses = this.props.campuses
         return (
             <div>
-                <h3>Add a student</h3>
+                <h3>{this.title}</h3>
                 <form onSubmit={this.handleSubmit}>
                     <label> Name:
                          <input type="text" value={this.state.name} onChange={this.handleNameChange} />
