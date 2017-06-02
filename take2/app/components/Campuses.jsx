@@ -1,11 +1,5 @@
 import React from 'react';
 
-function UrlExists(url) {
-	var http = new XMLHttpRequest();
-	http.open('HEAD', url, false);
-	http.send();
-	return http.status != 404;
-}
 
 
 const Campuses = (props) => {
@@ -18,12 +12,9 @@ const Campuses = (props) => {
 			<h3>Campuses</h3>
 			{
 				campuses.map((campus, idx) => {
-					let imgSrc
-					if (UrlExists(`/images/${campus.name}.png`)) {
-						imgSrc = `/images/${campus.name}.png`
-					} else {
-						imgSrc = '/images/Neptune.png'
-					}
+					let imgSrc = `/images/${campus.name}.png`
+					
+					
 					return (
 						<div className="col-xs-4" key={idx}>
 							<a className="thumbnail" href="#" onClick={() => selectCampus(campus.id)}>

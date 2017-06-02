@@ -80,7 +80,6 @@ export default class Root extends Component {
     }
 
     editCampus(campus, view='campuses') {
-        console.log("campus is", campus)
         const updatingStudent = axios.put('/api/campus', campus)
             .then(res => {
                 return res.data
@@ -142,7 +141,7 @@ export default class Root extends Component {
             .then(() => {
                 return store.dispatch(getStudents())
             })
-            .then(() => store.dispatch(changeView(view)))
+            .then(() => store.dispatch(changeView('students')))
             .catch(err => console.log(err))
     }
 
@@ -154,6 +153,7 @@ export default class Root extends Component {
         let campus = store.getState().campuses.filter(campus => campus.id === id)[0]
         campus.students = students
         store.dispatch(selectCampus(campus))
+        store.dispatch(changeAddOrEdit(''))
         store.dispatch(changeView('campus'))
     }
 
@@ -165,12 +165,14 @@ export default class Root extends Component {
         let campus = store.getState().campuses.filter(campus => campus.id === campusId)[0]
         student.campus = campus
         store.dispatch(selectStudent(student))
+        store.dispatch(changeAddOrEdit(''))
         store.dispatch(changeView('student'))
 
     }
 
     clickNavigate(dest) {
         store.dispatch(changeView(dest))
+        store.dispatch(changeAddOrEdit(''))
     }
 
     clickAddOrEdit(addOrEdit) {

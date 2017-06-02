@@ -1,7 +1,8 @@
 import React from 'react';
 
 const Campus = (props) => {
-  const imgSrc = `/images/${props.selectedCampus.name}.png`
+
+  let imgSrc = `/images/${props.selectedCampus.name}.png`
   return (
     <div>
       <h3>{props.selectedCampus.name}</h3>
